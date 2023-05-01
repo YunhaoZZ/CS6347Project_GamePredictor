@@ -4,6 +4,6 @@ def preprocess(path):
   df = pandas.read_csv(path)
   return df
 
-path="all_seasons.csv"
+path="steam_games.csv"
 df=preprocess(path)
 df
