@@ -42,15 +42,16 @@ def getDataset():
   rm = []
   y = []
   for idx, row in enumerate(df['Tags']):
-    temp = np.zeros(500)
+    # temp = np.zeros(500)
+    temp = [0 for _ in range(500)]
     for tag in row:
       if tag in tag_id.values():
         temp[list(tag_id.keys())[list(tag_id.values()).index(tag)]] = 1
     y.append(temp)
-    if not temp.any():
+    if 1 not in temp:
       rm.append(idx)
 
-
+  # y = np.array(y)
   df['y'] = y
 
   df = df.drop(rm)
