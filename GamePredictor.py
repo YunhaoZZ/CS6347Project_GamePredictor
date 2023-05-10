@@ -7,38 +7,21 @@ from tensorflow import keras
 from sklearn.model_selection import train_test_split
 from keras.layers import *
 import os.path
+from sklearn.naive_bayes import MultinomialNB
+from sklearn import metrics
 import tensorflow_probability as tfp
 import math
 
-
+df, x, y = getDataset()
+x = df['x']
+x = np.asarray(x).astype('float32')
+# y = y.tolist()
 
 def customLoss(x, pair):
     tfd = tfp.distributions
     dist = tfd.Normal(loc=pair[0], scale=pair[1])
     loss = tf.reduce_mean(-dist.log_prob(x))
     return loss
-
-    # loss = -tf.math.log(pair[1])
-    # loss -= 0.5 * tf.math.log(2*math.pi)
-    # loss -= 0.5 * tf.pow(((x - pair[0])/(pair[1])),2)
-    # return tf.math.reduce_mean(tf.math.log(loss))
-
-    # if pair[1] == 0:
-    #     return 0.0
-
-    # loss = -tf.math.log(pair[1])
-    # loss -= 0.5 * tf.math.log(2*math.pi)
-    # loss -= 0.5 * tf.pow(((x - pair[0])/(pair[1])),2)
-    # return tf.math.reduce_mean(-tf.math.log(loss))
-
-    # loss = (1/tf.math.sqrt(2*math.pi*pair[1]*pair[1]))
-    # loss += (x - pair[0])*(x - pair[0])/(2*pair[1]*pair[1])
-    # return tf.math.reduce_mean(tf.math.log(loss))
-
-
-df, x, y = getDataset()
-x = df['x']
-x = np.asarray(x).astype('float32')
 
 y = []
 for idx, row in enumerate(df['y']):
@@ -48,11 +31,11 @@ for idx, row in enumerate(df['y']):
         temp.append(tag)
     y.append(temp)
 
-y = np.array(y)
+y = np.array(y).astype('int')
 # print(y.shape)
 
 y_train, y_test, x_train, x_test = train_test_split(y, x, test_size=0.2, random_state=42)
-# print(y_test[-1])
+print(y_train)
 
 # define the neural network model
 
@@ -101,5 +84,15 @@ print('Test predict:', np.any(predictresutl < 0))
 print('Test predict:', np.asarray(predictresutl))
 print('Test predict:', np.asarray(predictresut2))
 
+# (x_test, predictresutl)
+# accuracy = keras.metrics.accuracy_score(testY,predictY)
 
-# accuracy = keras.metrics.accuracy_score(x_test, predictresutl)
+
+mnb = MultinomialNB(fit_prior=True)
+
+mnb.fit(y_train, x_train.astype('int'))
+
+predictY = mnb.predict(y_test)
+print("bayes: ")
+accuracy = metrics.accuracy_score(x_test.astype('int'),predictY)
+print(accuracy)
