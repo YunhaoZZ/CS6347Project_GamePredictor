@@ -7,20 +7,38 @@ from tensorflow import keras
 from sklearn.model_selection import train_test_split
 from keras.layers import *
 import os.path
+import tensorflow_probability as tfp
+import math
+
+
+
+def customLoss(x, pair):
+    tfd = tfp.distributions
+    dist = tfd.Normal(loc=pair[0], scale=pair[1])
+    loss = tf.reduce_mean(-dist.log_prob(x))
+    return loss
+
+    # loss = -tf.math.log(pair[1])
+    # loss -= 0.5 * tf.math.log(2*math.pi)
+    # loss -= 0.5 * tf.pow(((x - pair[0])/(pair[1])),2)
+    # return tf.math.reduce_mean(tf.math.log(loss))
+
+    # if pair[1] == 0:
+    #     return 0.0
+
+    # loss = -tf.math.log(pair[1])
+    # loss -= 0.5 * tf.math.log(2*math.pi)
+    # loss -= 0.5 * tf.pow(((x - pair[0])/(pair[1])),2)
+    # return tf.math.reduce_mean(-tf.math.log(loss))
+
+    # loss = (1/tf.math.sqrt(2*math.pi*pair[1]*pair[1]))
+    # loss += (x - pair[0])*(x - pair[0])/(2*pair[1]*pair[1])
+    # return tf.math.reduce_mean(tf.math.log(loss))
+
 
 df, x, y = getDataset()
-
-# print(df.shape)
-# print(x.shape)
-# print(y.shape)
-# print(df.head())
-
-# y are features, x are outputs
-# y = df['y']
 x = df['x']
 x = np.asarray(x).astype('float32')
-# y = y.tolist()
-
 
 y = []
 for idx, row in enumerate(df['y']):
@@ -64,7 +82,7 @@ else:
 
 
     # compile the model
-    model.compile(optimizer='adam', loss='mean_squared_error')
+    model.compile(optimizer='adam', loss=customLoss)
 
     # train the model
     model.fit(y_train, x_train, epochs=10, batch_size=32, validation_data=(y_test, x_test))
@@ -83,5 +101,5 @@ print('Test predict:', np.any(predictresutl < 0))
 print('Test predict:', np.asarray(predictresutl))
 print('Test predict:', np.asarray(predictresut2))
 
-(x_test, predictresutl)
-accuracy = keras.metrics.accuracy_score(testY,predictY)
+
+# accuracy = keras.metrics.accuracy_score(x_test, predictresutl)
