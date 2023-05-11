@@ -84,6 +84,8 @@ print('Test predict:', np.any(predictresutl < 0))
 print('Test predict:', np.asarray(predictresutl))
 print('Test predict:', np.asarray(predictresut2))
 
+accuracy = metrics.accuracy_score(x_test,predictresutl)
+print(accuracy)
 # (x_test, predictresutl)
 # accuracy = keras.metrics.accuracy_score(testY,predictY)
 
